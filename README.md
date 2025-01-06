@@ -17,9 +17,8 @@ Tools ->
 
 
 Steps:
-Create UI on phone (simple flutter app)
-Create Spring app with 1/2 endpoints.
-Create Kafka queue for sending info
-Create Python app to read the Kafka
-Create Mongo for data to be stored
-Update UI on phone?
+- Create UI on phone (simple flutter app)
+- Create Spring app with 1/2 endpoints.
+- Create Kafka queue for sending info
+- Create Python app to read the Kafka
+- Create Mongo for data to be stored

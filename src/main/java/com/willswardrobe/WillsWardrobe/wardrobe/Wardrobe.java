@@ -16,4 +16,8 @@ public class Wardrobe {
   private String id;
 
   private String itemName;
+
+  public String getItemName() {
+    return itemName;
+  }
 }

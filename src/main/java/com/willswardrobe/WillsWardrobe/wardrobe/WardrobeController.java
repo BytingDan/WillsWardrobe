@@ -30,7 +30,7 @@ public class WardrobeController {
 
     @GetMapping("/")
     public String testBasic() {
-        return "Hello";
+        return "Heello";
     }
 
     @GetMapping("/items")

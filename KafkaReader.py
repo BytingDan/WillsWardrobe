@@ -1,6 +1,7 @@
 from confluent_kafka import Consumer
 import requests
 from bs4 import BeautifulSoup
+import json
 
 KAFKA_BROKER = "localhost:9092"
 TOPIC = "wardrobeTopic"
@@ -27,10 +28,21 @@ def consume_messages():
                 print(f"Consumer error: {msg.error()}")
                 continue
 
-            url = msg.value().decode("utf-8")
-            print(f"Received URL: {url}")
+            print(type(msg))
+            print(type(msg.value()))
+            print(type(msg.key()))
+            decoded = msg.value().decode("utf-8")
+            print(f"Received Message: {decoded}")
 
-            scrap_page(url)
+            try:
+                message_json = json.loads(decoded)
+                print("Parsed JSON: ", message_json)
+
+                url = message_json['itemName']
+                scrap_page(url)
+            except json.JSONDecodeError as e:
+                print(f"Error parsing JSON: {e}")
+
 
     except KeyboardInterrupt:
         print("\nShutting down consumer...")
@@ -51,7 +63,7 @@ def scrap_page(url):
         print(f"Title: {title}")
         print(f"Description: {description}")
 
-        images = [img["src"] for img in soup.fina_all("img", src = True)]
+        images = [img["src"] for img in soup.find_all("img", src = True)]
         print(f"Found {len(images)} images.")
 
     except requests.exceptions.RequestException as e:

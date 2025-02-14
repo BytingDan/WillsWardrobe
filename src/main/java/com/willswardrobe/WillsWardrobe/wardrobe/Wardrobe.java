@@ -17,7 +17,16 @@ public class Wardrobe {
 
   private String itemName;
 
+  private String itemURL;
+private  String imageURL;
+
   public String getItemName() {
     return itemName;
+  }
+  public String getItemURL() {
+    return itemURL;
+  }
+  public String getImageURL() {
+    return imageURL;
   }
 }

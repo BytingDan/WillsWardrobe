@@ -24,7 +24,7 @@ public class WardrobeController {
     @PostMapping("/publish")
     public ResponseEntity<String> publish(@RequestBody Wardrobe wardrobe) {
         if (wardrobe == null) { return ResponseEntity.badRequest().build();}
-        kafkaTemplate.send("wardrobeTopic", wardrobe.getItemName(), wardrobe);
+        kafkaTemplate.send("wardrobeTopic", wardrobe);
         return ResponseEntity.accepted().body("Message sent to Kafka");
     }
 

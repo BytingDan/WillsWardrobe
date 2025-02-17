@@ -3,7 +3,10 @@ package com.willswardrobe.WillsWardrobe.wardrobe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,9 +26,20 @@ public class WardrobeController {
 
     @PostMapping("/publish")
     public ResponseEntity<String> publish(@RequestBody Wardrobe wardrobe) {
-        if (wardrobe == null) { return ResponseEntity.badRequest().build();}
+        if (wardrobe == null) {
+            return ResponseEntity.badRequest().build();
+        }
         kafkaTemplate.send("wardrobeTopic", wardrobe);
         return ResponseEntity.accepted().body("Message sent to Kafka");
+    }
+
+    //TODO - Update to have two topics to send to/from python
+
+    @KafkaListener(topics = "wardrobeTopic")
+    public void listenWithHeaders(
+            @Payload String message) {
+        System.out.println("Received Message: " + message);
+
     }
 
     @GetMapping("/")

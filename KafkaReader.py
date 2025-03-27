@@ -1,5 +1,6 @@
 from confluent_kafka import Consumer
 import requests
+import random
 from bs4 import BeautifulSoup
 import json
 
@@ -9,12 +10,13 @@ GROUP_ID = "url_scraper_group"
 
 consumer_config = {
     "bootstrap.servers": KAFKA_BROKER,
-    "group.id":GROUP_ID,
+    "group.id": GROUP_ID,
     "auto.offset.reset": "earliest"
 }
 
+
 def consume_messages():
-    consumer =Consumer(consumer_config)
+    consumer = Consumer(consumer_config)
     consumer.subscribe([TOPIC])
 
     print("Listening for messages on topic:", TOPIC)
@@ -54,13 +56,19 @@ def consume_messages():
 def scrap_page(url, image_url):
     try:
         print("******")
-        response = requests.get(url, headers={"User-Agent":"Mozilla/5.0"})
+        user_agents = [
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36"
+        ]
+        headers = {"User-Agent": random.choice(user_agents)}
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "html.parser")
 
         title = soup.title.string if soup.title else "No title found"
         print(f"Title: {title}")
-        meta_desc = soup.find("meta", attrs={"name":"description"})
+        meta_desc = soup.find("meta", attrs={"name": "description"})
         description = meta_desc["content"] if meta_desc else "No Description Found"
         print(f"Description: {description}")
 
@@ -70,19 +78,19 @@ def scrap_page(url, image_url):
         # colour = soup.find("span", class_="product-color").text.strip()
         # print("Colour:", colour)
 
-        images = [img["src"] for img in soup.find_all("img", src = True)]
+        images = [img["src"] for img in soup.find_all("img", src=True)]
         print(f"Found {len(images)} images.")
         # print("Images:)
 
         print("image URL: ", image_url)
 
 
-#TODO data to extrac
-# -> Title, Images, colours, sizes, price
-
+    # TODO data to extrac
+    # -> Title, Images, colours, sizes, price
 
     except requests.exceptions.RequestException as e:
         print(f"Failed to fetch URL: {e}")
+
 
 if __name__ == '__main__':
     consume_messages()

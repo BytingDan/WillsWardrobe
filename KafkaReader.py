@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import json
 
 KAFKA_BROKER = "localhost:9092"
-TOPIC = "wardrobeTopic"
+TOPIC = "wardrobeUrlTopic"
 GROUP_ID = "url_scraper_group"
 
 consumer_config = {
@@ -67,30 +67,53 @@ def scrap_page(url, image_url):
         soup = BeautifulSoup(response.text, "html.parser")
 
         title = soup.title.string if soup.title else "No title found"
-        print(f"Title: {title}")
+        # print(f"Title: {title}")
         meta_desc = soup.find("meta", attrs={"name": "description"})
         description = meta_desc["content"] if meta_desc else "No Description Found"
-        print(f"Description: {description}")
+        # print(f"Description: {description}")
 
         price = soup.find("span", class_="edbe20 ac3d9e d9ca8b").text.strip()
-        print("Price: ", price)
+        # print("Price: ", price)
 
         # colour = soup.find("span", class_="product-color").text.strip()
         # print("Colour:", colour)
 
         images = [img["src"] for img in soup.find_all("img", src=True)]
-        print(f"Found {len(images)} images.")
+        # print(f"Found {len(images)} images.")
         # print("Images:)
 
-        print("image URL: ", image_url)
+        # print("image URL: ", image_url)
 
 
     # TODO data to extrac
     # -> Title, Images, colours, sizes, price
 
+
+    # TODO combine data into object
+    # send data to kafka
+
+        clothes_data = {
+            "name": title,
+            "decription" : description,
+            "price": price,
+            "image": image_url,
+            "url": url
+        }
+        clothes_json = json.dumps(clothes_data, indent = 4)
+
+        publish_scraped_data(clothes_json)
+
     except requests.exceptions.RequestException as e:
         print(f"Failed to fetch URL: {e}")
 
 
+def publish_scraped_data(clothes_json):
+    print(clothes_json)
+
+
+
 if __name__ == '__main__':
     consume_messages()
+
+# wardrobeUrlTopic
+# wardrobeInfoTopic

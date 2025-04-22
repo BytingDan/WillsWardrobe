@@ -29,13 +29,15 @@ public class WardrobeController {
         if (wardrobe == null) {
             return ResponseEntity.badRequest().build();
         }
-        kafkaTemplate.send("wardrobeTopic", wardrobe);
+        kafkaTemplate.send("wardrobeUrlTopic", wardrobe);
         return ResponseEntity.accepted().body("Message sent to Kafka");
     }
 
     //TODO - Update to have two topics to send to/from python
 
-    @KafkaListener(topics = "wardrobeTopic")
+    //TODO - download the image
+
+    @KafkaListener(topics = "wardrobeUrlTopic")
     public void listenWithHeaders(
             @Payload String message) {
         System.out.println("Received Message: " + message);

@@ -42,6 +42,11 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
+    @KafkaListener(topics = "wardrobeInfoTopic", groupId = "wardrobe-id")
+    public void listenGroupId(String message) {
+        System.out.println("*-*-*-Received: " + message + "-*-*-*");
+    }
+
 
 
 }

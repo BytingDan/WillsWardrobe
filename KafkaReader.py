@@ -1,11 +1,12 @@
-from confluent_kafka import Consumer
+from confluent_kafka import Consumer, Producer
 import requests
 import random
 from bs4 import BeautifulSoup
 import json
 
 KAFKA_BROKER = "localhost:9092"
-TOPIC = "wardrobeUrlTopic"
+SUBSCRIBE_TOPIC = "wardrobeUrlTopic"
+PUBLISH_TOPIC = "wardrobeInfoTopic"
 GROUP_ID = "url_scraper_group"
 
 consumer_config = {
@@ -13,13 +14,16 @@ consumer_config = {
     "group.id": GROUP_ID,
     "auto.offset.reset": "earliest"
 }
+producer_config = {
+    "bootstrap.servers": KAFKA_BROKER
+}
 
 
 def consume_messages():
     consumer = Consumer(consumer_config)
-    consumer.subscribe([TOPIC])
+    consumer.subscribe([SUBSCRIBE_TOPIC])
 
-    print("Listening for messages on topic:", TOPIC)
+    print("Listening for messages on topic:", SUBSCRIBE_TOPIC)
 
     try:
         while True:
@@ -109,7 +113,16 @@ def scrap_page(url, image_url):
 
 def publish_scraped_data(clothes_json):
     print(clothes_json)
+    producer = Producer(producer_config)
+    producer.produce(PUBLISH_TOPIC, clothes_json, callback=delivery_report)
+    producer.flush()
 
+
+def delivery_report(err, msg):
+    if err is not None:
+        print(f"Delivery failed: {err}")
+    else:
+        print(f"Message delivered")
 
 
 if __name__ == '__main__':

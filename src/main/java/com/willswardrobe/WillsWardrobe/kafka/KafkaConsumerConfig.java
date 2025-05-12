@@ -1,5 +1,6 @@
 package com.willswardrobe.WillsWardrobe.kafka;
 
+import com.willswardrobe.WillsWardrobe.wardrobe.Wardrobe;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.messaging.handler.annotation.Header;
 
 import java.util.HashMap;
@@ -25,26 +27,31 @@ public class KafkaConsumerConfig {
     private String groupID;
 
     @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
+    public ConsumerFactory<String, Wardrobe> consumerFactory() {
         HashMap<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupID);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        return new DefaultKafkaConsumerFactory<>(props);
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(Wardrobe.class));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, Wardrobe> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Wardrobe> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
 
     @KafkaListener(topics = "wardrobeInfoTopic", groupId = "wardrobe-id")
-    public void listenGroupId(String message) {
-        System.out.println("*-*-*-Received: " + message + "-*-*-*");
+    public void listenGroupId(Wardrobe wardrobe) {
+        System.out.println("*-*-*-Received: " + wardrobe.getItemName() + "-*-*-*");
+
+        //TODO create object to receive
+        // Pass obj to db
+        // pass obj to cache
+        // Open API to receive cache based on ID and get the data
     }
 
 

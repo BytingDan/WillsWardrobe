@@ -97,12 +97,17 @@ def scrap_page(url, image_url):
     # send data to kafka
 
         clothes_data = {
-            "name": title,
-            "decription" : description,
-            "price": price,
-            "image": image_url,
-            "url": url
+            "itemName": title,
+            "itemDescription" : description,
+            "itemPrice": price,
+            "imageURL": image_url,
+            "itemURL": url
         }
+        #     private String itemURL;
+        #     private String imageURL;
+        #     private String itemName;
+        #     private String itemDescription;
+        #     private String itemPrice;
         clothes_json = json.dumps(clothes_data, indent = 4)
 
         publish_scraped_data(clothes_json)
@@ -118,15 +123,4 @@ def publish_scraped_data(clothes_json):
     producer.flush()
 
 
-def delivery_report(err, msg):
-    if err is not None:
-        print(f"Delivery failed: {err}")
-    else:
-        print(f"Message delivered")
-
-
-if __name__ == '__main__':
-    consume_messages()
-
-# wardrobeUrlTopic
-# wardrobeInfoTopic
+# def delivery_report

@@ -32,7 +32,7 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupID);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(Wardrobe.class));
     }
 
@@ -46,8 +46,14 @@ public class KafkaConsumerConfig {
 
     @KafkaListener(topics = "wardrobeInfoTopic", groupId = "wardrobe-id")
     public void listenGroupId(Wardrobe wardrobe) {
+        System.out.println("*-*-*-Received: " + wardrobe.getId() + "-*-*-*");
         System.out.println("*-*-*-Received: " + wardrobe.getItemName() + "-*-*-*");
+        System.out.println("*-*-*-Received: " + wardrobe.getItemDescription() + "-*-*-*");
+        System.out.println("*-*-*-Received: " + wardrobe.getItemPrice() + "-*-*-*");
+        System.out.println("*-*-*-Received: " + wardrobe.getItemURL() + "-*-*-*");
+        System.out.println("*-*-*-Received: " + wardrobe.getImageURL() + "-*-*-*");
 
+//        System.out.println("Hit listener");
         //TODO create object to receive
         // Pass obj to db
         // pass obj to cache

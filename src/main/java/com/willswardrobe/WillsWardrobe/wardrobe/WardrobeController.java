@@ -39,8 +39,8 @@ public class WardrobeController {
 
     @KafkaListener(topics = "wardrobeUrlTopic")
     public void listenWithHeaders(
-            @Payload String message) {
-        System.out.println("Received Message: " + message);
+            @Payload Wardrobe message) {
+        System.out.println("Received Message");
 
     }
 

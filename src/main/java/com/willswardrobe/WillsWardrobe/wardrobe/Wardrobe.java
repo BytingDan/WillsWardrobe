@@ -1,14 +1,13 @@
 package com.willswardrobe.WillsWardrobe.wardrobe;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+//@NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "Wardrobe")
 public class Wardrobe {
@@ -19,6 +18,13 @@ public class Wardrobe {
     private String itemName;
     private String itemDescription;
     private String itemPrice;
+    public Wardrobe() {
+
+    }
+
+    public String getId() {
+        return id;
+    }
 
     public String getItemURL() {
         return itemURL;
@@ -38,6 +44,10 @@ public class Wardrobe {
 
     public String getItemPrice() {
         return itemPrice;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setItemName(String itemName) {

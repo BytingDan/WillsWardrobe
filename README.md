@@ -14,6 +14,10 @@ Tools ->
 4. Python/BeautifulSoup app for retrieving information
 5. Database (Mongo?) for storing details of clothes saved (probably need blob storage in future for saving images)
 
+Branches:
+- flutter-ui -> Frontend mobile app
+- python-scaper -> Web scraper for scraping data from clothing website
+- spring-backend -> Java backend for handling communication between services/databases
 
 
 Steps:

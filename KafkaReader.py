@@ -50,7 +50,6 @@ def consume_messages():
             except json.JSONDecodeError as e:
                 print(f"Error parsing JSON: {e}")
 
-
     except KeyboardInterrupt:
         print("\nShutting down consumer...")
     finally:
@@ -66,49 +65,59 @@ def scrap_page(url, image_url):
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36"
         ]
         headers = {"User-Agent": random.choice(user_agents)}
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, "html.parser")
+        print("Sending Request to: ", url)
 
-        title = soup.title.string if soup.title else "No title found"
-        # print(f"Title: {title}")
-        meta_desc = soup.find("meta", attrs={"name": "description"})
-        description = meta_desc["content"] if meta_desc else "No Description Found"
-        # print(f"Description: {description}")
+        #*******
+        # response = requests.get(url, headers=headers)
+        # print("Got response: ", response)
+        # response.raise_for_status()
+        # soup = BeautifulSoup(response.text, "html.parser")
+        #
+        # title = soup.title.string if soup.title else "No title found"
+        # # print(f"Title: {title}")
+        # meta_desc = soup.find("meta", attrs={"name": "description"})
+        # description = meta_desc["content"] if meta_desc else "No Description Found"
+        # # print(f"Description: {description}")
+        #
+        # price = soup.find("span", class_="edbe20 ac3d9e d9ca8b").text.strip()
+        # # print("Price: ", price)
+        #
+        # # colour = soup.find("span", class_="product-color").text.strip()
+        # # print("Colour:", colour)
+        #
+        # images = [img["src"] for img in soup.find_all("img", src=True)]
+        # # print(f"Found {len(images)} images.")
+        # # print("Images:)
+        #
+        # # print("image URL: ", image_url)
+        #
+        # # TODO data to extrac
+        # # -> Title, Images, colours, sizes, price
+        #
+        # # TODO combine data into object
+        # # send data to kafka
 
-        price = soup.find("span", class_="edbe20 ac3d9e d9ca8b").text.strip()
-        # print("Price: ", price)
-
-        # colour = soup.find("span", class_="product-color").text.strip()
-        # print("Colour:", colour)
-
-        images = [img["src"] for img in soup.find_all("img", src=True)]
-        # print(f"Found {len(images)} images.")
-        # print("Images:)
-
-        # print("image URL: ", image_url)
-
-
-    # TODO data to extrac
-    # -> Title, Images, colours, sizes, price
-
-
-    # TODO combine data into object
-    # send data to kafka
-
+        # clothes_data = {
+        #     "itemName": title,
+        #     "itemDescription": description,
+        #     "itemPrice": price,
+        #     "imageURL": image_url,
+        #     "itemURL": url
+        # }
+        #******
         clothes_data = {
-            "itemName": title,
-            "itemDescription" : description,
-            "itemPrice": price,
-            "imageURL": image_url,
-            "itemURL": url
+            "itemName": "new clothing",
+            "itemDescription": "clothe",
+            "itemPrice": "1 billion",
+            "imageURL": url,
+            "itemURL": image_url
         }
         #     private String itemURL;
         #     private String imageURL;
         #     private String itemName;
         #     private String itemDescription;
         #     private String itemPrice;
-        clothes_json = json.dumps(clothes_data, indent = 4)
+        clothes_json = json.dumps(clothes_data, indent=4)
 
         publish_scraped_data(clothes_json)
 
@@ -123,4 +132,12 @@ def publish_scraped_data(clothes_json):
     producer.flush()
 
 
-# def delivery_report
+def delivery_report(err, msg):
+    if err is not None:
+        print(f"Delivery failed: {err}")
+    else:
+        print(f"Message Delivered")
+
+
+if __name__ == '__main__':
+    consume_messages()
